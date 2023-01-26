@@ -1,0 +1,36 @@
+{% extends 'catalog/base.html' %}
+
+{% block content %}
+      <table class="table table-light table-striped">
+      <thead>
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">Наименование</th>
+          <th scope="col">Описание</th>
+          <th scope="col">Изображение</th>
+          <th scope="col">Категория</th>
+          <th scope="col">Цена</th>
+          <th scope="col">Дата создания</th>
+          <th scope="col">Дата последнего изменения</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for object in object_list %}
+        <tr>
+          <td>{{ object.id }}</td>
+          <td>{{ object.product_name }}</td>
+          <td>{{ object.description|truncatechars:100 }}</td>
+          <td>
+              <img src="/media/{{ object.preview }}" height="100" />
+{#              <img src="{{ object.image|mediapath }}" height="100" />#}
+{#              <img src="{% mediapath object.image %}" height="100" />#}
+          </td>
+          <td>{{ object.category }}</td>
+          <td>{{ object.purchase_price }}</td>
+          <td>{{ object.date_of_creation }}</td>
+          <td>{{ object.last_modified_date }}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+{% endblock %}
