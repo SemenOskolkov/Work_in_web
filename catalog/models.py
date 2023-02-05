@@ -1,4 +1,5 @@
 from django.db import models
+from pytils.translist import slugify
 
 
 NULLABLE = {'blank': True, 'null': True}
@@ -31,3 +32,26 @@ class Category(models.Model):
 
     def __str__(self):
         return f'{self.id} {self.category_name}'
+
+
+class BlogRecord(models.Model):
+    title = models.CharField(max_length=100, verbose_name='Заголовок')
+    slug = models.CharField(max_length=150, unique=True, verbose_name='Slug')
+    content = models.TextField(verbose_name='Содержимое')
+    preview = models.ImageField(upload_to='blog_record/', **NULLABLE, verbose_name='Изображение')
+    date_of_creation = models.DateField(auto_now=False, auto_now_add=True, verbose_name='Дата создания')
+    sign_publication = models.BooleanField(verbose_name='Признак публикации')
+    number_views = models.IntegerField(default=0, verbose_name='Количество просмотров')
+
+    class Meta:
+        verbose_name = 'Запись'
+        verbose_name_plural = 'Записи'
+
+    def __str__(self):
+        return f'{self.id} {self.title}'
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.tittle)
+        super(BlogRecord, self).save(*args, **kwargs)
+
