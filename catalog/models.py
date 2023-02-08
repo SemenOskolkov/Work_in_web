@@ -1,5 +1,6 @@
 from django.db import models
-from pytils.translist import slugify
+from pytils.translit import slugify
+from django.core.exceptions import ValidationError
 
 
 NULLABLE = {'blank': True, 'null': True}
@@ -21,6 +22,13 @@ class Product(models.Model):
     def __str__(self):
         return f'{self.id} {self.product_name} {self.purchase_price} {self.category}'
 
+    def save(self, *args, **kwargs):
+        dont_use = ['казинo', 'криптовалюта', 'крипта', 'биржа', 'дешево', 'бесплатно', 'обман', 'полиция', 'радар']
+        if self.product_name and self.description in dont_use:
+            raise ValidationError('Запрещенное слово')
+        else:
+            super().save(*args, **kwargs)
+
 
 class Category(models.Model):
     category_name = models.CharField(max_length=150, verbose_name='Наименование категории')
@@ -35,12 +43,19 @@ class Category(models.Model):
 
 
 class BlogRecord(models.Model):
+    STATUS_ACTIVE = 'active'
+    STATUS_INACTIVE = 'inactive'
+    STATUSES = (
+        (STATUS_ACTIVE, 'опубликован'),
+        (STATUS_INACTIVE, 'не опубликован')
+    )
+
     title = models.CharField(max_length=100, verbose_name='Заголовок')
     slug = models.CharField(max_length=150, unique=True, verbose_name='Slug')
     content = models.TextField(verbose_name='Содержимое')
     preview = models.ImageField(upload_to='blog_record/', **NULLABLE, verbose_name='Изображение')
     date_of_creation = models.DateField(auto_now=False, auto_now_add=True, verbose_name='Дата создания')
-    sign_publication = models.BooleanField(verbose_name='Признак публикации')
+    sign_publication = models.CharField(choices=STATUSES, default=STATUS_INACTIVE, max_length=10, verbose_name='Признак публикации')
     number_views = models.IntegerField(default=0, verbose_name='Количество просмотров')
 
     class Meta:
@@ -52,6 +67,26 @@ class BlogRecord(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.slug:
-            self.slug = slugify(self.tittle)
+            self.slug = slugify(self.title)
         super(BlogRecord, self).save(*args, **kwargs)
 
+
+class Version(models.Model):
+    STATUS_ACTIVE = 'active'
+    STATUS_INACTIVE = 'inactive'
+    STATUSES = (
+        (STATUS_ACTIVE, 'активен'),
+        (STATUS_INACTIVE, 'не активен')
+    )
+
+    product_name = models.ForeignKey('Product', on_delete=models.CASCADE, verbose_name='Продукт')
+    version_number = models.IntegerField(verbose_name='Номер версии')
+    version_name = models.CharField(max_length=100, verbose_name='Название версии')
+    version_status = models.CharField(choices=STATUSES, default=STATUS_INACTIVE, max_length=10, verbose_name='Статус')
+
+    class Meta:
+        verbose_name = 'Версия'
+        verbose_name_plural = 'Версии'
+
+    def __str__(self):
+        return f'{self.product_name} {self.version_number} {self.version_name}'

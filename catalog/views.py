@@ -1,7 +1,9 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404, redirect
+
+from catalog.forms import ProductForm
 from catalog.models import Product, BlogRecord
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 
 
 def home(request):
@@ -16,45 +18,96 @@ def contacts(request):
     return render(request, 'catalog/contacts.html')
 
 
-def product_card(request):
-    context = {
-        'object_list': Product.objects.all()
-    }
-    return render(request, 'catalog/product_card.html', context)
+# def product_card(request):
+#     context = {
+#         'object_list': Product.objects.all()
+#     }
+#     return render(request, 'catalog/product_card.html', context)
 
 
 class ProductListView(ListView):
     model = Product
 
+    def get_context_data(self, **kwargs):
+        pass
 
-def get_counter(requests):
-    if requests.method == "GET":
-        g = BlogRecord.views_controller
-        g += 1
-        context = {"g": g}
-        return render(requests, context)
+
+class ProductCreateView(CreateView):
+    model = Product
+    # fields = {'product_name', 'description', 'preview', 'purchase_price'}
+    form_class = ProductForm
+    success_url = reverse_lazy('catalog:product_list')
+
+
+class ProductUpdateView(UpdateView):
+    model = Product
+    # fields = {'product_name', 'description', 'preview', 'purchase_price'}
+    form_class = ProductForm
+    success_url = reverse_lazy('catalog:product_list')
+
+
+class ProductDeleteView(DeleteView):
+    model = Product
+    success_url = reverse_lazy('catalog:product_list')
+
+
+class ProductDetailView(DetailView):
+    model = Product
+
+
+def change_status(requests, pk):
+    product_item = get_object_or_404(Product, pk=pk)
+    if product_item.status == Product.STATUS_INACTIV:
+        product_item.status = Product.STATUS_ACTIV
+    else:
+        product_item.status = Product.STATUS_ACTIV
+    product_item.save()
+    return redirect(reverse('catalog:product_list'))
 
 
 class BlogRecordListView(ListView):
     model = BlogRecord
 
+    def get_quaryset(self):
+        quaryset = super().get_quaryset()
+        quaryset = quaryset.filter(status=BlogRecord.STATUS_ACTIVE)
+        return quaryset
+
 
 class BlogRecordCreateView(CreateView):
     model = BlogRecord
     fields = {'title', 'content', 'preview', 'sign_publication'}
-    succsess_url = reverse_lazy('catalog:blog_record')
+    success_url = reverse_lazy('catalog:blog_record_list')
 
 
 class BlogRecordUpdateView(UpdateView):
     model = BlogRecord
     fields = {'title', 'content', 'preview', 'sign_publication'}
-    succsess_url = reverse_lazy('catalog:update')
+    success_url = reverse_lazy('catalog:blog_record_list')
 
 
 class BlogRecordDeleteView(DeleteView):
     model = BlogRecord
-    succsess_url = reverse_lazy('catalog:blog_record')
+    success_url = reverse_lazy('catalog:blog_record_list')
 
 
 class BlogRecordDetailView(DetailView):
     model = BlogRecord
+
+    def get_counter(self):
+        obj = super().get_counter()
+        obj.blog_view += 1
+        obj.save()
+        return obj
+
+
+def change_status(requests, pk):
+    blog_item = get_object_or_404(BlogRecord, pk=pk)
+    if blog_item.status == BlogRecord.STATUS_INACTIV:
+        blog_item.status = BlogRecord.STATUS_ACTIV
+    else:
+        blog_item.status = BlogRecord.STATUS_ACTIV
+    blog_item.save()
+    return redirect(reverse('catalog:blog_record_list'))
+
+

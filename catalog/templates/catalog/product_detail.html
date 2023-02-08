@@ -11,24 +11,29 @@
                             <img src="/media/{{ object.preview }}" height="100" />
                         </td>
                         </tr>
-                            <td></td>
-                            <td>{{ object.title }}</td>
+                            <td>Наименование</td>
+                            <td>{{ object.product_name }}</td>
                         </tr>
                         <tr>
-                            <td></td>
-                            <td>{{ object.content }}</td>
+                            <td>Категория</td>
+                            <td>{{ object.category }}</td>
                         </tr>
                         </tr>
                         <tr>
+                            <td>Цена за покупку</td>
+                            <td>{{object.purchase_price}}</td>
+                        </tr>
+                            <td>Описание</td>
+                            <td>{{ object.description }}</td>
+                        </tr>
+                         </tr>
                             <td>Дата создания</td>
                             <td>{{object.date_of_creation}}</td>
                         </tr>
-                            <td>Признак публикации</td>
-                            <td>{{ object.sign_publication }}</td>
-                        </tr>
                          </tr>
-                            <td>Количество просмотров</td>
-                            <td>{{object.number_views}}</td>
+                            <td>Дата последнего изменения</td>
+                            <td>{{object.last_modified_date}}</td>
+                        </tr>
                     </table>
                 </div>
             </div>

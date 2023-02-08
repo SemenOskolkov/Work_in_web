@@ -3,6 +3,7 @@
 {% block content %}
       <table class="table table-light table-striped">
       <thead>
+      <a href="{% url "catalog:prod_create" %}" class="btn btn-primary">Создать</a>
         <tr>
           <th scope="col">#</th>
           <th scope="col">Наименование</th>
@@ -29,6 +30,10 @@
           <td>{{ object.purchase_price }}</td>
           <td>{{ object.date_of_creation }}</td>
           <td>{{ object.last_modified_date }}</td>
+          <td><a href="{% url "catalog:prod_detail" object.pk %}" class="btn btn-info">Подробнее</a></td>
+          <td>
+              <a href="{% url "catalog:update_with_version" object.pk %}" class="btn btn-primary">Изменить</a>
+              <a href="{% url "catalog:prod_delete" object.pk %}" class="btn btn-danger">Удалить</a>
         </tr>
       {% endfor %}
       </tbody>
