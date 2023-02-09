@@ -36,10 +36,10 @@ class VersionForm(forms.ModelForm):
         model = Version
         fields = '__all__'
 
-    def get_quaryset(self):
-        quaryset = super().get_quaryset()
-        quaryset = quaryset.filter(status=VersionForm.STATUS_ACTIVE)
-        return quaryset
+    def get_queryset(self):
+        queryset = super().get_quaryset()
+        queryset = queryset.filter(status=VersionForm.STATUS_ACTIVE)
+        return queryset
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

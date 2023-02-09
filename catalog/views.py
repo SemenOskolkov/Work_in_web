@@ -28,8 +28,8 @@ def contacts(request):
 class ProductListView(ListView):
     model = Product
 
-    def get_context_data(self, **kwargs):
-        pass
+    # def get_context_data(self, **kwargs):
+    #     pass
 
 
 class ProductCreateView(CreateView):
@@ -68,10 +68,10 @@ def change_status(requests, pk):
 class BlogRecordListView(ListView):
     model = BlogRecord
 
-    def get_quaryset(self):
-        quaryset = super().get_quaryset()
-        quaryset = quaryset.filter(status=BlogRecord.STATUS_ACTIVE)
-        return quaryset
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        queryset = queryset.filter(sign_publication=BlogRecord.STATUS_ACTIVE)
+        return queryset
 
 
 class BlogRecordCreateView(CreateView):
