@@ -1,4 +1,4 @@
-#!/home/semen/study_projects/projects_django/project_1/env/bin/python3
+#!/Users/semenoskolkov/PycharmProjects/Study_projects/Projects/projects_django/project_1/env/bin/python3.11
 # -*- coding: utf-8 -*-
 
 USAGE = """Usage: echo "Héllo Wörld" | slugify # => hello-world"""

@@ -1,3 +1,4 @@
+from django.db import transaction
 from catalog.forms import ProductForm, VersionForm
 from django.forms import inlineformset_factory
 from catalog.models import Product, Version
@@ -26,3 +27,23 @@ class ProductUpdateWithVersionView(UpdateView):
             formset = FormSet(instance=self.object)
         context_data['formset'] = formset
         return context_data
+
+    def form_valid(self, form):
+        context_data = self.get_context_data()
+        formset = context_data['formset']
+        formset.instance = self.object
+
+        version_checkboxes = [value.get('is_actual') for value in formset.cleaned_data if
+                              value.get('is_actual')]
+
+        with transaction.atomic():
+            self.object = form.save()
+
+            if len(version_checkboxes) > 1:
+                messages.info(self.request, 'Только одна версия может быть активной')
+                return self.form_invalid(form)
+
+            if formset.is_valid():
+                formset.save()
+
+        return super().form_valid(form)
