@@ -38,6 +38,13 @@ class ProductCreateView(CreateView):
     form_class = ProductForm
     success_url = reverse_lazy('catalog:product_list')
 
+    def form_valid(self, form):
+        if form.is_valid():
+            self.object = form.save(commit=False)  # Подготовиться обьект с данными из формы
+            self.object.user_create = self.request.user  # В поле user_create запишится пользователь который делает запрос
+            self.object.save()
+        return super().form_valid(form)
+
 
 class ProductUpdateView(UpdateView):
     model = Product

@@ -1,40 +1,44 @@
 {% extends 'catalog/base.html' %}
 
 {% block content %}
-      <table class="table table-light table-striped">
-      <thead>
-      <a href="{% url "catalog:blog_create" %}" class="btn btn-primary">Создать</a>
+    <table class="table table-light table-striped">
+        <thead>
+        {% if user.is_authenticated %}
+            <a href="{% url "catalog:blog_create" %}" class="btn btn-primary">Создать</a>
+        {% endif %}
         <tr>
-          <th scope="col">#</th>
-          <th scope="col">Заголовок</th>
-          <th scope="col">Изображение</th>
-          <th scope="col">Содержимое</th>
-          <th scope="col">Дата создания</th>
-          <th scope="col">Количество просмотров</th>
-          <th scope="col">Статус</th>
-          <th scope="col">Подробнее</th>
+            <th scope="col">#</th>
+            <th scope="col">Заголовок</th>
+            <th scope="col">Изображение</th>
+            <th scope="col">Содержимое</th>
+            <th scope="col">Дата создания</th>
+            <th scope="col">Количество просмотров</th>
+            <th scope="col">Статус</th>
+            <th scope="col">Подробнее</th>
         </tr>
-      </thead>
-      <tbody>
-      {% for object in object_list %}
-        <tr>
-          <td>{{ object.id }}</td>
-          <td>{{ object.title }}</td>
-          <td>
-              <img src="/media/{{ object.preview }}" height="100" />
-{#              <img src="{{ object.image|mediapath }}" height="100" />#}
-{#              <img src="{% mediapath object.image %}" height="100" />#}
-          </td>
-          <td>{{ object.description|truncatechars:100 }}</td>
-          <td>{{ object.date_of_creation }}</td>
-          <td>{{ object.number_views }}</td>
-          <td>{{ object.get_sign_publication_display }}</td>
-          <td><a href="{% url "catalog:blog_detail" object.pk %}" class="btn btn-info">Подробнее</a></td>
-          <td>
-                <a href="{% url "catalog:blog_update" object.pk %}" class="btn btn-primary">Изменить</a>
-                <a href="{% url "catalog:blog_delete" object.pk %}" class="btn btn-danger">Удалить</a>
-        </tr>
-      {% endfor %}
-      </tbody>
+        </thead>
+        <tbody>
+        {% for object in object_list %}
+            <tr>
+                <td>{{ object.id }}</td>
+                <td>{{ object.title }}</td>
+                <td>
+                    <img src="/media/{{ object.preview }}" height="100"/>
+                    {#              <img src="{{ object.image|mediapath }}" height="100" />#}
+                    {#              <img src="{% mediapath object.image %}" height="100" />#}
+                </td>
+                <td>{{ object.description|truncatechars:100 }}</td>
+                <td>{{ object.date_of_creation }}</td>
+                <td>{{ object.number_views }}</td>
+                <td>{{ object.get_sign_publication_display }}</td>
+                <td><a href="{% url "catalog:blog_detail" object.pk %}" class="btn btn-info">Подробнее</a></td>
+                <td>
+                    {% if user.is_authenticated %}
+                    <a href="{% url "catalog:blog_update" object.pk %}" class="btn btn-primary">Изменить</a>
+                    <a href="{% url "catalog:blog_delete" object.pk %}" class="btn btn-danger">Удалить</a>
+                    {% endif %}
+            </tr>
+        {% endfor %}
+        </tbody>
     </table>
 {% endblock %}
