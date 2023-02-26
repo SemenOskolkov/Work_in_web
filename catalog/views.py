@@ -1,3 +1,4 @@
+from django.contrib.auth.mixins import PermissionRequiredMixin, UserPassesTestMixin
 from django.shortcuts import render, get_object_or_404, redirect
 
 from catalog.forms import ProductForm
@@ -46,11 +47,15 @@ class ProductCreateView(CreateView):
         return super().form_valid(form)
 
 
-class ProductUpdateView(UpdateView):
+class ProductUpdateView(UserPassesTestMixin, UpdateView):
     model = Product
     # fields = {'product_name', 'description', 'preview', 'purchase_price'}
     form_class = ProductForm
     success_url = reverse_lazy('catalog:product_list')
+
+    def test_func(self):
+        prod = self.get_object()
+        return prod.user == self.request.user or self.request.user.has_perms(obj=prod)
 
 
 class ProductDeleteView(DeleteView):
@@ -87,10 +92,15 @@ class BlogRecordCreateView(CreateView):
     success_url = reverse_lazy('catalog:blog_record_list')
 
 
-class BlogRecordUpdateView(UpdateView):
+class BlogRecordUpdateView(UserPassesTestMixin, PermissionRequiredMixin, UpdateView):
+    permission_required = 'catalog.blog_change'
     model = BlogRecord
     fields = {'title', 'content', 'preview', 'sign_publication'}
     success_url = reverse_lazy('catalog:blog_record_list')
+
+    def test_func(self):
+        blog = self.get_object()
+        return blog.user == self.request.user.has_perm('set_published_status')
 
 
 class BlogRecordDeleteView(DeleteView):

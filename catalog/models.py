@@ -19,6 +19,12 @@ class Product(models.Model):
         verbose_name = 'продукт'
         verbose_name_plural = 'продукты'
 
+        permissions = [
+            ('set_published_status', 'Can publish products'),
+            ('can_change_description', 'Can change description'),
+            ('can_change_category', 'Can change category')
+        ]
+
     def __str__(self):
         return f'{self.id} {self.product_name} {self.purchase_price} {self.category}'
 
@@ -61,6 +67,10 @@ class BlogRecord(models.Model):
     class Meta:
         verbose_name = 'Запись'
         verbose_name_plural = 'Записи'
+
+        permissions = [
+            ('set_published_status', 'Can publish blog')
+        ]
 
     def __str__(self):
         return f'{self.id} {self.title}'
