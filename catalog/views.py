@@ -55,7 +55,9 @@ class ProductUpdateView(UserPassesTestMixin, UpdateView):
 
     def test_func(self):
         prod = self.get_object()
-        return prod.user == self.request.user or self.request.user.has_perms(obj=prod)
+        return prod.user == self.request.user or self.request.user.has_perm('set_published_status',
+                                                                            'can_change_description',
+                                                                            'can_change_category')
 
 
 class ProductDeleteView(DeleteView):
@@ -126,5 +128,3 @@ def change_status(requests, pk):
         blog_item.status = BlogRecord.STATUS_ACTIV
     blog_item.save()
     return redirect(reverse('catalog:blog_record_list'))
-
-
