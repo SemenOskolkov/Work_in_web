@@ -1,8 +1,11 @@
+from django.conf import settings
 from django.contrib.auth.mixins import PermissionRequiredMixin, UserPassesTestMixin
+from django.core.cache import cache
 from django.shortcuts import render, get_object_or_404, redirect
+from django.views.decorators.cache import cache_page
 
 from catalog.forms import ProductForm
-from catalog.models import Product, BlogRecord
+from catalog.models import Product, BlogRecord, Category
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
 from django.urls import reverse_lazy, reverse
 
@@ -67,6 +70,50 @@ class ProductDeleteView(DeleteView):
 
 class ProductDetailView(DetailView):
     model = Product
+
+
+    def get_product_from_cache(self):
+        queryset = Product.objects.all()
+        if settings.CACHE_ENABLED:
+            key = f'product_detail_{self.object.pk}'
+            cache_data = cache.get(key)
+            if cache_data is None:
+                cache_data = queryset
+                cache.set(key, cache_data)
+
+            return cache_data
+
+        return queryset
+
+
+# @cache_page
+# def detail_controller(request):
+#     context = {
+#
+#     }
+#
+#     return render(
+#         request, 'catalog/product_detail.html',
+#         context
+#     )
+
+
+class CategoryListView(ListView):
+    model = Category
+
+
+    def get_categories_from_cache(self):
+        queryset = Category.objects.all()
+        if settings.CACHE_ENABLED:
+            key = 'category'
+            cache_data = cache.get(key)
+            if cache_data is None:
+                cache_data = queryset
+                cache.set(key, cache_data)
+
+            return cache_data
+
+        return queryset
 
 
 def change_status(requests, pk):
