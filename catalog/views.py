@@ -45,7 +45,7 @@ class ProductCreateView(CreateView):
     def form_valid(self, form):
         if form.is_valid():
             self.object = form.save(commit=False)  # Подготовиться обьект с данными из формы
-            self.object.user_create = self.request.user  # В поле user_create запишится пользователь который делает запрос
+            self.object.owner = self.request.user  # В поле user_create запишится пользователь который делает запрос
             self.object.save()
         return super().form_valid(form)
 
@@ -58,9 +58,9 @@ class ProductUpdateView(UserPassesTestMixin, UpdateView):
 
     def test_func(self):
         prod = self.get_object()
-        return prod.user == self.request.user or self.request.user.has_perm('set_published_status',
-                                                                            'can_change_description',
-                                                                            'can_change_category')
+        return prod.user == self.request.user or self.request.user.has_perms(['catalog.set_published_status',
+                                                                              'catalog.can_change_description',
+                                                                              'catalog.can_change_category'])
 
 
 class ProductDeleteView(DeleteView):
@@ -70,7 +70,6 @@ class ProductDeleteView(DeleteView):
 
 class ProductDetailView(DetailView):
     model = Product
-
 
     def get_product_from_cache(self):
         queryset = Product.objects.all()
@@ -100,7 +99,6 @@ class ProductDetailView(DetailView):
 
 class CategoryListView(ListView):
     model = Category
-
 
     def get_categories_from_cache(self):
         queryset = Category.objects.all()
@@ -149,7 +147,7 @@ class BlogRecordUpdateView(UserPassesTestMixin, PermissionRequiredMixin, UpdateV
 
     def test_func(self):
         blog = self.get_object()
-        return blog.user == self.request.user.has_perm('set_published_status')
+        return blog.user == self.request.user.has_perm('catalog.set_published_status')
 
 
 class BlogRecordDeleteView(DeleteView):

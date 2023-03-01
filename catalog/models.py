@@ -14,13 +14,14 @@ class Product(models.Model):
     purchase_price = models.IntegerField(verbose_name='Цена за покупку')
     date_of_creation = models.DateField(auto_now=False, auto_now_add=True, verbose_name='Дата создания')
     last_modified_date = models.DateField(auto_now=True, auto_now_add=False, verbose_name='Дата последнего изменения')
+    owner = models.ForeignKey('users.User', on_delete=models.CASCADE, verbose_name='Владелец')
 
     class Meta:
         verbose_name = 'продукт'
         verbose_name_plural = 'продукты'
 
         permissions = [
-            ('set_published_status', 'Can publish products'),
+            ('set_published_status_products', 'Can publish products'),
             ('can_change_description', 'Can change description'),
             ('can_change_category', 'Can change category')
         ]
@@ -69,7 +70,7 @@ class BlogRecord(models.Model):
         verbose_name_plural = 'Записи'
 
         permissions = [
-            ('set_published_status', 'Can publish blog')
+            ('set_published_status_blog', 'Can publish blog')
         ]
 
     def __str__(self):
