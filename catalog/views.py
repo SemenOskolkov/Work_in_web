@@ -58,7 +58,7 @@ class ProductUpdateView(UserPassesTestMixin, UpdateView):
 
     def test_func(self):
         prod = self.get_object()
-        return prod.user == self.request.user or self.request.user.has_perms(['catalog.set_published_status',
+        return prod.user == self.request.user or self.request.user.has_perms(['catalog.set_published_status_products',
                                                                               'catalog.can_change_description',
                                                                               'catalog.can_change_category'])
 
@@ -147,7 +147,7 @@ class BlogRecordUpdateView(UserPassesTestMixin, PermissionRequiredMixin, UpdateV
 
     def test_func(self):
         blog = self.get_object()
-        return blog.user == self.request.user.has_perm('catalog.set_published_status')
+        return blog.user == self.request.user.has_perm('catalog.set_published_status_blog')
 
 
 class BlogRecordDeleteView(DeleteView):
